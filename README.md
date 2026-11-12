@@ -4,7 +4,7 @@
 
 A MATLAB and Simulink comparison of two quadrotor controllers on a 60-second circular reference that climbs to 1 m and then holds altitude. The disturbed scenario applies a sustained horizontal force of `[0.4, 0.6, 0] N` and a yaw torque of `0.3 N·m` at 12 s.
 
-[Technical report](Trajectory_Tracking_for_Quadrotors_under_External_Wrenches.pdf)
+[Technical report](Trajectory_Tracking_for_Quadrotors_under_External_Wrenches.pdf) · [Presentation with simulation video](PPT_TRENTI.pptx)
 
 ![Horizontal path and position error for both controllers under the same external wrench](assets/tracking-under-wrench.png)
 
