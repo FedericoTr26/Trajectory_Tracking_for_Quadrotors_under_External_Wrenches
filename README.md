@@ -1,48 +1,52 @@
-# Trajectory Tracking for Quadrotors under External Wrenches: Hierarchical vs Passivity-Based Control
+# Trajectory Tracking for Quadrotors under External Wrenches
 
-This repository presents the implementation and comparison of two control architectures for a quadrotor UAV:
+**Hierarchical vs. Passivity-Based Control**
 
-- **Hierarchical Control**: based on a two-loop structure with an outer LQR controller for position and an inner PD controller for attitude.
-- **Passivity-Based Control**: For robust stability.
+A MATLAB and Simulink comparison of two quadrotor controllers on a 60-second circular reference that climbs to 1 m and then holds altitude. The disturbed scenario applies a sustained horizontal force of `[0.4, 0.6, 0] N` and a yaw torque of `0.3 N·m` at 12 s.
 
-Both control strategies are tested in two scenarios:
-- **Without external disturbances**
-- **With external disturbances (external wrench)**
+[Technical report](quadrotor-trajectory-tracking-under-external-wrenches.pdf)
 
+![Horizontal path and position error for both controllers under the same external wrench](assets/tracking-under-wrench.png)
 
-## 🛠️ Requirements
+## Control architectures
 
-- MATLAB R2024a or newer  
-- Simulink  
-- Control System Toolbox
-- Signal Processing Toolbox
-- UAV Toolbox
+The two Simulink implementations were developed and compared for Field and Service Robotics at the University of Naples Federico II, supervised by Prof. Fabio Ruggiero.
 
-## 🚀 How to Run
+| Controller | Implementation |
+| --- | --- |
+| [Hierarchical](Hierarchical/) | Outer-loop LQR for position, inner-loop PD for attitude, and a rotor and motor model. |
+| [Passivity-based](Passivity-Based/) | Cascaded position and attitude control with a momentum-based observer for external forces and torques. |
 
-1. Open MATLAB.
-2. Navigate to the desired controller folder (`Hierarchical/` or `Passivity/`).
-3. Run one of the simulation scripts:
-   ### Hierarchical Control:
-   ```matlab
-   run('main.m')           % without disturbance  
-   run('main_wrench.m')    % with external disturbance
-   ```
-   ### Passivity-Based Control:
-   ```matlab
-   run('MainPassivityNoDisturbance.m')     % without disturbance  
-   run('MainPassivityDisturbance.m')       % with external disturbance  
-   ```
+## Results
 
-## 📊 Simulation Outputs
+Position RMSE is the root mean square of the 3D tracking-error magnitude over 12–60 s. The same time window is used for each run.
 
-Each simulation automatically generates the following:
+| Scenario | Hierarchical | Passivity-based |
+| --- | ---: | ---: |
+| Nominal | 0.00556 m | 0.00000234 m |
+| External wrench | 0.322 m | 0.00177 m |
 
-- 🛸 **3D UAV animation** during the execution of the trajectory tracking.
-- 📈 **Plots** showing:
-  - Reference trajectory
-  - Position tracking 
-  - Orientation tracking 
-  - Control errors and stability behavior
-- 💾 **EPS files** containing all plots, will be saved in the corresponding subfolder for documentation and report inclusion.
+Both controllers track the nominal reference closely. With the applied wrench, hierarchical control shows a persistent lateral offset. The passivity-based controller recovers the reference after a brief transient in this simulation.
 
+## Run the simulations
+
+Tested with MATLAB R2026a, Simulink, Control System Toolbox, Signal Processing Toolbox, and UAV Toolbox.
+
+Set MATLAB's current folder to the repository root and run one of the following commands.
+
+```matlab
+run('Hierarchical/main.m')                         % Hierarchical, nominal
+run('Hierarchical/main_wrench.m')                  % Hierarchical, external wrench
+run('Passivity-Based/MainPassivityNoDisturbance.m') % Passivity-based, nominal
+run('Passivity-Based/MainPassivityDisturbance.m')   % Passivity-based, external wrench
+```
+
+The scripts generate their MATLAB input data, run the models, and export position, attitude, and thrust plots as EPS files. Hierarchical runs write to `Hierarchical/figures/`. Passivity-based runs write to `Passivity-Based/PassivityNoDisturbance/` or `Passivity-Based/PassivityDisturbance/`.
+
+On Windows, a deeply nested checkout can exceed the build path limit. If Simulink reports this error, use a shorter checkout path or run the following in the current MATLAB session before starting a simulation. [MathWorks documentation](https://www.mathworks.com/help/simulink/slref/simulink.filegencontrol.html)
+
+```matlab
+buildFolder = tempname;
+Simulink.fileGenControl('set', 'CacheFolder', buildFolder, ...
+    'CodeGenFolder', buildFolder, 'createDir', true);
+```

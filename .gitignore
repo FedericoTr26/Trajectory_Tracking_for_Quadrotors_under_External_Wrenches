@@ -1,0 +1,10 @@
+slprj/
+*.slxc
+*.slx.autosave
+/Hierarchical/figures/
+/Hierarchical/controller_gains.mat
+/Hierarchical/quadcopter_params.mat
+/Hierarchical/desired_traj_signals.mat
+/Passivity-Based/PassivityNoDisturbance/
+/Passivity-Based/PassivityDisturbance/
+/Passivity-Based/desired_traj_signals.mat
